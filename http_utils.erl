@@ -11,4 +11,4 @@ word(T, H, Delims, [], false) -> word(T, Delims, []);
 word(T, H, Delims, Acc, false) -> word_ret(Acc, T);
 word(T, H, Delims, Acc, _) -> word(T, Delims, [H|Acc]).
 
-word_ret(Word, Tail) -> {lists:reverse(string:to_upper(Word)), Tail}.
+word_ret(Word, Tail) -> {lists:reverse(Word), Tail}.
