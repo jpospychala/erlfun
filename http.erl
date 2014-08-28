@@ -19,16 +19,20 @@ loop(LSock) ->
 
 handle(Socket) ->
   {ok, ReqBinary} = recv(Socket, []),
-  Request = read(ReqBinary),
+  Request = read(binary_to_list(ReqBinary)),
   Response = process(Request, {}),
   send(Socket, Response),
   gen_tcp:close(Socket).
 
 recv(Socket, Bs) ->
-  case gen_tcp:recv(Socket, 0) of
-    {ok, B} -> recv(Socket, [Bs, B]);
-    {error, einval} -> {ok, list_to_binary(Bs)};
-    {error, closed} -> {ok, list_to_binary(Bs)}
+  S = binary:match(list_to_binary(Bs), list_to_binary([13,10,13,10])),
+  if not (S == nomatch) -> {ok, list_to_binary(Bs)};
+    S == nomatch ->
+    case gen_tcp:recv(Socket, 0) of
+      {ok, B} -> recv(Socket, [Bs, B]);
+      {error, einval} -> {ok, list_to_binary(Bs)};
+      {error, closed} -> {ok, list_to_binary(Bs)}
+    end
   end.
 
 read(Req) ->
@@ -41,9 +45,9 @@ read(Req) ->
     {"HTTP/1.0", R4} -> http_10;
     {"HTTP/1.1", R4} -> http_11
   end,
-  io:format("~w", [R4]),
   {M, Url, HttpVer}.
 
 
-process(Request, Response) -> {}.
-send(Socket, Response) -> {}.
+process({_, Url, _}, Response) -> "HTTP/1.0 200 OK\r\nContent-Type: text/html\r\nContent-Length: 20\r\n\r\n<h1>hello world</h1>".
+send(Socket, Response) ->
+  gen_tcp:send(Socket, Response).
