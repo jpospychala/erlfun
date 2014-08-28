@@ -31,12 +31,18 @@ recv(Socket, Bs) ->
     {error, closed} -> {ok, list_to_binary(Bs)}
   end.
 
-read(Req) -> read(http_utils:token(Req), method, {}).
-read({"GET", Req}, method, {}) -> read(http_utils:token(Req), url, {get});
-read({"POST", Req}, method, {}) -> read(http_utils:token(Req), url, {post});
-read({Url, Req}, url, {Method}) -> read(http_utils:token(Req), httpVer, {Method, Url});
-read({"HTTP/1.0", Req}, httpVer, {Method, Url}) -> {Method, Url, http_10};
-read({"HTTP/1.1", Req}, httpVer, {Method, Url}) -> {Method, Url, http_11}.
+read(Req) ->
+  M = case http_utils:token(Req) of
+    {"GET", R2} -> get;
+    {"POST", R2} -> post
+  end,
+  {Url, R3} = http_utils:token(R2),
+  HttpVer = case http_utils:token(R3) of
+    {"HTTP/1.0", R4} -> http_10;
+    {"HTTP/1.1", R4} -> http_11
+  end,
+  io:format("~w", [R4]),
+  {M, Url, HttpVer}.
 
 
 process(Request, Response) -> {}.
