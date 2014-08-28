@@ -1,5 +1,5 @@
 -module(erlang_samples).
--export([client/3, match_hello/1, word/1, word/2, test_word/0]).
+-export([client/3, match_hello/1, test_match_hello/0, word/1, word/2, test_word/0]).
 
 
 % TCP CLIENT
@@ -19,20 +19,26 @@ do_recv(Sock, Bs) ->
 
 
 % PATTERN MATCHING STRING
-match_hello([$h,$e,$l,$l,$o|_]) -> hello;
+match_hello("hello" ++ _) -> hello;
 match_hello(_) -> error.
 
-% GET WORD
+test_match_hello() ->
+  hello = match_hello("hello Franek"),
+  error = match_hello("goodbye Lucy"),
+  ok.
+
+% READ FIRST WORD FROM TEXT
 word(Text) -> word(Text, " \t\r\n").
 word(Text, Delims) -> word(Text, Delims, []).
 word([], Delims, Acc) -> lists:reverse(Acc);
-word([H|T], Delims, Acc) -> word(T, H, Delims, Acc, string:chr(Delims, H)).
-word(T, H, Delims, [], 1) -> word(T, Delims, []);
-word(T, H, Delims, Acc, 1) -> lists:reverse(Acc);
+word([H|T], Delims, Acc) -> word(T, H, Delims, Acc, string:chr(Delims, H) == 0).
+word(T, H, Delims, [], false) -> word(T, Delims, []);
+word(T, H, Delims, Acc, false) -> lists:reverse(Acc);
 word(T, H, Delims, Acc, _) -> word(T, Delims, [H|Acc]).
 
 test_word() ->
   "koala" = word("koala walks"),
   "koala" = word(" koala walks"),
   "koala" = word("koala"),
+  "koala" = word("koala\nwalks"),
   ok.
