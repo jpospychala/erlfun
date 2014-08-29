@@ -7,9 +7,13 @@ should_read_http_request_test() ->
 should_read_http_request2_test() ->
   {post,"/hello", http_11} = http:read("POST /hello HTTP/1.1\n\n").
 
+read_query_string_test() ->
+  [{"a", "b"}] = http_utils:query_string("?a=b"),
+  [{"a", "b"}] = http_utils:query_string("a=b").
 
 % TODO
 % switch http_utils to process binary rather than string
 % should parse URI and use only path part when dispatching to middleware (not query)
 % process request headers
 % generate response headers
+% limit request line length to rfc limit

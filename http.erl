@@ -59,15 +59,18 @@ read(Req) ->
 
 
 process({Method, Url, _}, Middlewares) ->
-  RespFn = matchMiddleware(Method, Url, Middlewares),
-  {_, Resp} = RespFn(),
+  {ok, ParsedUrl} = http_uri:parse("http://" ++ Url),
+  RespFn = matchMiddleware(Method, element(5, ParsedUrl), Middlewares),
+
+  Query = {http_utils:query_string(element(6, ParsedUrl))},
+  {_, Resp} = RespFn(Query),
   RespLen = string:len(Resp),
   "HTTP/1.0 200 OK\r\nContent-Type: text/html\r\nContent-Length: " ++ integer_to_list(RespLen) ++ "\r\n\r\n" ++ Resp.
 
 matchMiddleware(M, U, [{M1,U1,Fn}|T]) ->
   if
     (((M1 == any) or (M == M1)) and ((U1 == any) or (U == U1))) -> Fn;
-    T == [] -> fun() -> {404, "Not Found"} end;
+    T == [] -> fun(_) -> {404, "Not Found"} end;
     true-> matchMiddleware(M, U, T)
   end.
 
