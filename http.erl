@@ -1,7 +1,7 @@
 -module(http).
 -export([start/1, start/0, listen/1, handle/1, read/1]).
 
-start() -> start(8088).
+start() -> start(8888).
 start(Port) -> spawn(?MODULE, listen, [Port]).
 
 listen(Port) ->

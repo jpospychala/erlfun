@@ -1,11 +1,5 @@
 -module(http_test).
--export([suite/0]).
+-include_lib("eunit/include/eunit.hrl").
 
-suite() ->
-  should_read_http_request(),
-  ok.
-
-should_read_http_request() ->
+should_read_http_request_test() ->
   {get,"/", http_10} = http:read("GET / HTTP/1.0\n\n").
-
-fail(Reason) -> {error, Reason}.
