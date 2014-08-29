@@ -6,5 +6,6 @@ build:
 test: build
 	erl -noshell -s http_test test -s init stop
 
-run: build
-	erl -noshell -s http start
+run_sample: build test
+	erlc sample_app.erl
+	erl -noshell -s sample_app main
