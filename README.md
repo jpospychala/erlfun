@@ -1,21 +1,25 @@
 Minimal Http server written in Erlang
 =====================================
 
-Following simple Http server responds with "Hello World" on main page:
+Following simple Http server returns 6 at "/sum?a=1&b=5"
 ```
--module(myapp).
--export([main/0]).
+-module(sample_app).
+  -export([main/0]).
 
-main() ->
-  http:start(8888, [
-    {get, "/", fun() ->
-      {200, "Hello World"}
-    end},
+  main() ->
+    http:start(8888, [
+      {get, "/", fun(_) ->
+        {200, "Hello World"}
+      end},
 
-    {any, any, fun() ->
-      {404, "Not this time dude"}
-    end}
-  ]).
+      {get, "/sum", fun({[{"a", A}, {"b", B}]}) ->
+        {200, str(int(A) + int(B))}
+      end}
+    ]).
+
+  int(V) -> list_to_integer(V).
+  str(V) -> integer_to_list(V).
+
 ```
 
 Http server development
