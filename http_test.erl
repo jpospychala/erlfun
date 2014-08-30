@@ -13,7 +13,7 @@ read_query_string_test() ->
 
 % TODO
 % switch http_utils to process binary rather than string
-% should parse URI and use only path part when dispatching to middleware (not query)
 % process request headers
 % generate response headers
 % limit request line length to rfc limit
+% make error handling erlang-like

@@ -22,8 +22,8 @@ int(V) -> list_to_integer(V).
 str(V) -> integer_to_list(V).
 ```
 
-Http server development
------------------------
+Server development
+------------------
 
 Run tests:
 
